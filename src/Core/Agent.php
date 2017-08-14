@@ -12,6 +12,7 @@ use GuzzleHttp\ClientInterface;
 use Leo108\SDK\SDK;
 use Leo108\WorkWechat\OAuth\OAuth;
 use Leo108\WorkWechat\OAuth\QRConnect;
+use Leo108\WorkWechat\User\User;
 use Leo108\WorkWechat\WorkWechat;
 use Psr\Log\LoggerInterface;
 
@@ -21,6 +22,7 @@ use Psr\Log\LoggerInterface;
  * @property \Leo108\WorkWechat\Core\AccessToken $accessToken
  * @property \Leo108\WorkWechat\OAuth\OAuth      $oauth
  * @property \Leo108\WorkWechat\OAuth\QRConnect  $qrConnect
+ * @property \Leo108\WorkWechat\User\User        $user
  */
 class Agent extends SDK
 {
@@ -45,6 +47,7 @@ class Agent extends SDK
             'accessToken' => AccessToken::class,
             'oauth'       => OAuth::class,
             'qrConnect'   => QRConnect::class,
+            'user'        => User::class,
         ];
     }
 
