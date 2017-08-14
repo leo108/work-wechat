@@ -8,7 +8,6 @@
 
 namespace Leo108\WorkWechat\Core;
 
-use GuzzleHttp\MessageFormatter;
 use GuzzleHttp\Middleware;
 use Leo108\SDK\AbstractApi;
 use Leo108\SDK\Middleware\TokenMiddleware;
@@ -83,8 +82,9 @@ class BaseApi extends AbstractApi
     {
         $wechat    = $this->getAgent()->getWechat();
         $logger    = $this->getAgent()->getLogger();
-        $formatter = new MessageFormatter($wechat->getConfig('log_format', MessageFormatter::CLF));
-        $logLevel  = $wechat->getConfig('log_level', LogLevel::INFO);
+        $hideToken = $wechat->getConfig('log.hide_access_token', true);
+        $formatter = new MessageFormatter($wechat->getConfig('log.format', MessageFormatter::CLF), $hideToken);
+        $logLevel  = $wechat->getConfig('log.level', LogLevel::INFO);
 
         return Middleware::log($logger, $formatter, $logLevel);
     }
@@ -105,7 +105,7 @@ class BaseApi extends AbstractApi
     protected function getRetryMiddleware()
     {
         return Middleware::retry(function ($retries, RequestInterface $request, ResponseInterface $response = null) {
-            if ($retries > $this->getAgent()->getWechat()->getConfig('api_retry', 3)) {
+            if ($retries >= $this->getAgent()->getWechat()->getConfig('api_retry', 3)) {
                 return false;
             }
             if (!$response || $response->getStatusCode() >= 400) {
