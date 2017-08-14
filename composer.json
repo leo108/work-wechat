@@ -11,7 +11,7 @@
   ],
   "require": {
     "php": ">=5.6",
-    "leo108/php_sdk_skeleton": "dev-master",
+    "leo108/php_sdk_skeleton": "^0.0.1",
     "psr/simple-cache": "^1.0",
     "symfony/http-foundation": "^3.0|^2.6",
     "cache/array-adapter": "^1.0"

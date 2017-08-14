@@ -9,6 +9,7 @@
 namespace Leo108\WorkWechat\Core;
 
 use Leo108\SDK\AbstractApi;
+use Leo108\SDK\Middleware\RetryMiddleware;
 use Leo108\SDK\Middleware\TokenMiddleware;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -77,6 +78,23 @@ class BaseApi extends AbstractApi
 
     protected function getRetryMiddleware()
     {
+        return new RetryMiddleware(function ($retries, RequestInterface $request, ResponseInterface $response = null) {
+            if ($retries > $this->getAgent()->getWechat()->getConfig('api_retry', 3)) {
+                return false;
+            }
+            if (!$response || $response->getStatusCode() >= 400) {
+                return true;
+            }
+
+            $ret = $this->parseJson($response);
+            if (in_array($ret['errcode'], ['40001', '42001'])) {
+                $request = $this->attachAccessToken($request, false);
+
+                return true;
+            }
+
+            return false;
+        });
     }
 
     /**

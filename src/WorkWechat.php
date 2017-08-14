@@ -12,6 +12,7 @@ use Cache\Adapter\PHPArray\ArrayCachePool;
 use GuzzleHttp\Client;
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\RequestOptions;
+use Leo108\SDK\Utils;
 use Leo108\WorkWechat\Core\Agent;
 use Leo108\WorkWechat\Core\Exceptions\InvalidArgumentException;
 use Psr\Log\LoggerInterface;
@@ -44,6 +45,11 @@ class WorkWechat
      * @var Agent[]
      */
     protected $agents;
+
+    /**
+     * @var array
+     */
+    protected $config;
 
     /**
      * @var string
@@ -146,6 +152,20 @@ class WorkWechat
         return isset($this->agents[$name]) ? $this->agents[$name] : null;
     }
 
+    /**
+     * @param null|string $key
+     * @param mixed       $default
+     * @return mixed
+     */
+    public function getConfig($key = null, $default = null)
+    {
+        if (is_null($key)) {
+            return $this->config;
+        }
+
+        return Utils::get($this->config, $key, $default);
+    }
+
     protected function parseConfig(array $config)
     {
         if (!isset($config['corp_id'])) {
@@ -193,5 +213,7 @@ class WorkWechat
                 $this->agents[$name] = new Agent($this, $agent, $this->httpClient, $this->logger);
             }
         }
+
+        $this->config = $config;
     }
 }
