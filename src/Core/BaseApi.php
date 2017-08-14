@@ -8,11 +8,14 @@
 
 namespace Leo108\WorkWechat\Core;
 
+use GuzzleHttp\MessageFormatter;
+use GuzzleHttp\Middleware;
 use Leo108\SDK\AbstractApi;
-use Leo108\SDK\Middleware\RetryMiddleware;
 use Leo108\SDK\Middleware\TokenMiddleware;
+use Leo108\WorkWechat\Core\Middleware\CheckApiResponseMiddleware;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
+use Psr\Log\LogLevel;
 use Symfony\Component\HttpFoundation\Request;
 
 class BaseApi extends AbstractApi
@@ -41,9 +44,7 @@ class BaseApi extends AbstractApi
      */
     protected function parseJson(ResponseInterface $response)
     {
-        $content = $response->getBody()->getContents();
-
-        return \GuzzleHttp\json_decode($content, true);
+        return \GuzzleHttp\json_decode($response->getBody(), true);
     }
 
     public function handleNotify(callable $handler, Request $request = null)
@@ -54,21 +55,43 @@ class BaseApi extends AbstractApi
         // todo
     }
 
+    /**
+     * @return array
+     */
     protected function getHttpMiddleware()
     {
         return array_filter([
-            $this->getLogRequestMiddleware(),
-            $this->getTokenMiddleware(),
             $this->getRetryMiddleware(),
+            $this->getTokenMiddleware(),
+            $this->getLogRequestMiddleware(),
+            $this->getCheckApiResponseMiddleware(),
         ]);
     }
 
-
-    protected function getLogRequestMiddleware()
+    /**
+     * @return CheckApiResponseMiddleware
+     */
+    protected function getCheckApiResponseMiddleware()
     {
-
+        return new CheckApiResponseMiddleware(true, [$this, 'parseJson']);
     }
 
+    /**
+     * @return callable
+     */
+    protected function getLogRequestMiddleware()
+    {
+        $wechat    = $this->getAgent()->getWechat();
+        $logger    = $this->getAgent()->getLogger();
+        $formatter = new MessageFormatter($wechat->getConfig('log_format', MessageFormatter::CLF));
+        $logLevel  = $wechat->getConfig('log_level', LogLevel::INFO);
+
+        return Middleware::log($logger, $formatter, $logLevel);
+    }
+
+    /**
+     * @return TokenMiddleware
+     */
     protected function getTokenMiddleware()
     {
         return new TokenMiddleware(true, function (RequestInterface $request) {
@@ -76,9 +99,12 @@ class BaseApi extends AbstractApi
         });
     }
 
+    /**
+     * @return callable
+     */
     protected function getRetryMiddleware()
     {
-        return new RetryMiddleware(function ($retries, RequestInterface $request, ResponseInterface $response = null) {
+        return Middleware::retry(function ($retries, RequestInterface $request, ResponseInterface $response = null) {
             if ($retries > $this->getAgent()->getWechat()->getConfig('api_retry', 3)) {
                 return false;
             }
@@ -87,8 +113,9 @@ class BaseApi extends AbstractApi
             }
 
             $ret = $this->parseJson($response);
-            if (in_array($ret['errcode'], ['40001', '42001'])) {
-                $request = $this->attachAccessToken($request, false);
+            if (in_array($ret['errcode'], ['40001', '40014', '41001', '42001'])) {
+                // 刷新 access token
+                $this->getAgent()->accessToken->getToken(true);
 
                 return true;
             }
@@ -108,7 +135,7 @@ class BaseApi extends AbstractApi
     private function attachAccessToken(RequestInterface $request, $cache = true)
     {
         $query                 = \GuzzleHttp\Psr7\parse_query($request->getUri()->getQuery());
-        $query['access_token'] = $this->getAgent()->accessToken->getToken($cache);
+        $query['access_token'] = $this->getAgent()->accessToken->getToken(!$cache);
         $uri                   = $request->getUri()->withQuery(http_build_query($query));
 
         return $request->withUri($uri);

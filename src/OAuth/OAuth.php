@@ -28,11 +28,7 @@ class OAuth extends AbstractOAuth
 
     public function getUserDetailByTicket($ticket)
     {
-        return $this->parseJson($this->apiJson(self::API_GET_USER_DETAIL.'?'.http_build_query([
-                'access_token' => $this->getAgent()->accessToken->getToken(),
-            ]), [
-            'user_ticket' => $ticket,
-        ]));
+        return $this->parseJson($this->apiJson(self::API_GET_USER_DETAIL, ['user_ticket' => $ticket]));
     }
 
     public function getUserDetail()
