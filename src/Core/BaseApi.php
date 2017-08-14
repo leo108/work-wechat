@@ -42,7 +42,7 @@ class BaseApi extends AbstractApi
      * @param ResponseInterface $response
      * @return array|null
      */
-    protected function parseJson(ResponseInterface $response)
+    public static function parseJson(ResponseInterface $response)
     {
         return \GuzzleHttp\json_decode($response->getBody(), true);
     }
@@ -73,7 +73,7 @@ class BaseApi extends AbstractApi
      */
     protected function getCheckApiResponseMiddleware()
     {
-        return new CheckApiResponseMiddleware(true, [$this, 'parseJson']);
+        return new CheckApiResponseMiddleware(true, [static::class, 'parseJson']);
     }
 
     /**
@@ -112,7 +112,7 @@ class BaseApi extends AbstractApi
                 return true;
             }
 
-            $ret = $this->parseJson($response);
+            $ret = static::parseJson($response);
             if (in_array($ret['errcode'], ['40001', '40014', '41001', '42001'])) {
                 // 刷新 access token
                 $this->getAgent()->accessToken->getToken(true);

@@ -30,7 +30,7 @@ class AccessToken extends BaseApi
 
     public function getTokenFromServer()
     {
-        $ret = $this->parseJson($this->apiGet(self::API_GET_TOKEN, [
+        $ret = static::parseJson($this->apiGet(self::API_GET_TOKEN, [
             'corpid'     => $this->getAgent()->getWechat()->getCorpId(),
             'corpsecret' => $this->getAgent()->getConfig('secret'),
         ]));

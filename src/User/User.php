@@ -16,6 +16,6 @@ class User extends BaseApi
 
     public function getUser($userId)
     {
-        return $this->parseJson($this->apiGet(self::API_GET_USER, ['userid' => $userId]));
+        return static::parseJson($this->apiGet(self::API_GET_USER, ['userid' => $userId]));
     }
 }

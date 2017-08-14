@@ -95,7 +95,7 @@ abstract class AbstractOAuth extends BaseApi
             throw new InvalidStateException();
         }
 
-        return $this->parseJson($this->apiGet(self::API_GET_USER_INFO, ['code' => $this->getCode()]));
+        return static::parseJson($this->apiGet(self::API_GET_USER_INFO, ['code' => $this->getCode()]));
     }
 
     /**
