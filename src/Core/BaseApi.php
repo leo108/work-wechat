@@ -61,10 +61,10 @@ class BaseApi extends AbstractApi
     protected function getHttpMiddleware()
     {
         return array_filter([
+            $this->getCheckApiResponseMiddleware(),
             $this->getRetryMiddleware(),
             $this->getTokenMiddleware(),
             $this->getLogRequestMiddleware(),
-            $this->getCheckApiResponseMiddleware(),
         ]);
     }
 
