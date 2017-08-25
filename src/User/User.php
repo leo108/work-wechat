@@ -22,6 +22,9 @@ class User extends BaseApi
     const API_CONVERT_TO_OPENID = 'user/convert_to_openid';
     const API_AUTH_SUCC = 'user/authsucc';
 
+    const GENDER_MALE = 1;
+    const GENDER_FEMALE = 2;
+
     public function get($userId)
     {
         return static::parseJson($this->apiGet(self::API_GET, ['userid' => $userId]));
@@ -39,7 +42,7 @@ class User extends BaseApi
 
     public function delete($userId)
     {
-        return static::parseJson($this->apiJson(self::API_DELETE, ['userid' => $userId]));
+        return static::parseJson($this->apiGet(self::API_DELETE, ['userid' => $userId]));
     }
 
     public function batchDelete(array $userIdArr)
