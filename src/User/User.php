@@ -54,7 +54,7 @@ class User extends BaseApi
     {
         return static::parseJson($this->apiJson(self::API_SIMPLE_LIST, [
             'department_id' => $departmentId,
-            'fetch_child'   => $fetchChild ? '1' : '0',
+            'fetch_child'   => $fetchChild ? 1 : 0,
         ]));
     }
 
@@ -62,7 +62,7 @@ class User extends BaseApi
     {
         return static::parseJson($this->apiJson(self::API_LIST, [
             'department_id' => $departmentId,
-            'fetch_child'   => $fetchChild ? '1' : '0',
+            'fetch_child'   => $fetchChild ? 1 : 0,
         ]));
     }
 

@@ -29,7 +29,7 @@ class Department extends BaseApi
 
     public function delete($id)
     {
-        return static::parseJson($this->apiJson(self::API_DELETE, ['id' => $id]));
+        return static::parseJson($this->apiGet(self::API_DELETE, ['id' => $id]));
     }
 
     public function departmentList($id = null)
