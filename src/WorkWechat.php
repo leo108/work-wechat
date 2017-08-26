@@ -14,6 +14,7 @@ use GuzzleHttp\ClientInterface;
 use GuzzleHttp\RequestOptions;
 use Leo108\SDK\Utils;
 use Leo108\WorkWechat\Core\Agent;
+use Leo108\WorkWechat\Core\ContactAgent;
 use Leo108\WorkWechat\Core\Exceptions\InvalidArgumentException;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
@@ -45,6 +46,11 @@ class WorkWechat
      * @var Agent[]
      */
     protected $agents;
+
+    /**
+     * @var Agent|null
+     */
+    protected $contactAgent;
 
     /**
      * @var array
@@ -153,6 +159,14 @@ class WorkWechat
     }
 
     /**
+     * @return Agent|null
+     */
+    public function getContactAgent()
+    {
+        return $this->contactAgent;
+    }
+
+    /**
      * @param null|string $key
      * @param mixed       $default
      * @return mixed
@@ -212,6 +226,11 @@ class WorkWechat
             foreach ($config['agents'] as $name => $agent) {
                 $this->agents[$name] = new Agent($this, $agent, $this->httpClient, $this->logger);
             }
+        }
+
+        if (isset($config['contact_secret'])) {
+            $agentConfig        = ['secret' => $config['contact_secret']];
+            $this->contactAgent = new ContactAgent($this, $agentConfig, $this->httpClient, $this->logger);
         }
 
         $this->config = $config;
