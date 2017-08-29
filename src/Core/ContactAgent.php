@@ -11,7 +11,6 @@ namespace Leo108\WorkWechat\Core;
 use Leo108\WorkWechat\Department\Department;
 use Leo108\WorkWechat\User\User;
 
-
 /**
  * Class ContactAgent
  * @package Leo108\WorkWechat

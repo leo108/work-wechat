@@ -20,6 +20,7 @@ class User extends BaseApi
     const API_SIMPLE_LIST = 'user/simplelist';
     const API_LIST = 'user/list';
     const API_CONVERT_TO_OPENID = 'user/convert_to_openid';
+    const API_CONVERT_TO_USERID = 'user/convert_to_userid';
     const API_AUTH_SUCC = 'user/authsucc';
 
     const GENDER_MALE = 1;
@@ -74,6 +75,11 @@ class User extends BaseApi
         }
 
         return static::parseJson($this->apiJson(self::API_CONVERT_TO_OPENID, $req));
+    }
+
+    public function convertToUserId($openId)
+    {
+        return static::parseJson($this->apiJson(self::API_CONVERT_TO_USERID, ['openid' => $openId]));
     }
 
     public function authSucc($userId)
