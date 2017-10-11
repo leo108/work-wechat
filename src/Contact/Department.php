@@ -6,7 +6,7 @@
  * Time: 14:15
  */
 
-namespace Leo108\WorkWechat\Department;
+namespace Leo108\WorkWechat\Contact;
 
 use Leo108\WorkWechat\Core\BaseApi;
 
