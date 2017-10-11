@@ -51,8 +51,6 @@ class Agent extends SDK
             'accessToken' => AccessToken::class,
             'oauth'       => OAuth::class,
             'qrConnect'   => QRConnect::class,
-            'user'        => User::class,
-            'department'  => Department::class,
             'message'     => Message::class,
         ];
     }
