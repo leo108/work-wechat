@@ -14,6 +14,7 @@ use Leo108\WorkWechat\Contact\User;
 /**
  * Class ContactAgent
  * @package Leo108\WorkWechat
+ * @property \Leo108\WorkWechat\Core\AccessToken   $accessToken
  * @property \Leo108\WorkWechat\Contact\User       $user
  * @property \Leo108\WorkWechat\Contact\Department $department
  */
@@ -21,9 +22,10 @@ class ContactAgent extends Agent
 {
     protected function getApiMap()
     {
-        return array_merge(parent::getApiMap(), [
-            'user'       => User::class,
-            'department' => Department::class,
-        ]);
+        return [
+            'accessToken' => AccessToken::class,
+            'user'        => User::class,
+            'department'  => Department::class,
+        ];
     }
 }
